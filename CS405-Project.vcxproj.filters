@@ -33,6 +33,18 @@
     <ClCompile Include="common\texture.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="common\text2D.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\heart.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\objloader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\vboindexer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\shader.hpp">
@@ -50,6 +62,18 @@
     <ClInclude Include="common\texture.hpp">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="common\text2D.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\heart.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\objloader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\vboindexer.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleFragmentShader.fragmentshader">
@@ -64,6 +88,24 @@
     <None Include="TransformVertexShader.vertexshader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="TextVertexShader.fragmentshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="TextVertexShader.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="imagefragment.fragmentshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="imageshader.imageshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="StandardShading.fragmentshader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="StandardShading.vertexshader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="minecraft.bmp">
@@ -72,5 +114,22 @@
     <Image Include="brickwall.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Holstein.DDS">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="azkni-x64jj.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="heart-png-38789.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="toppng.com-heart-pixelart-game-retro-red-minecraft-life-pixel-corazon-de-8-bits-1024x865.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="cube.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
   </ItemGroup>
 </Project>

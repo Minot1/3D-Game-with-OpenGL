@@ -145,28 +145,52 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common\heart.cpp" />
+    <ClCompile Include="common\objloader.cpp" />
     <ClCompile Include="common\shader.cpp" />
+    <ClCompile Include="common\text2D.cpp" />
     <ClCompile Include="common\texture.cpp" />
+    <ClCompile Include="common\vboindexer.cpp" />
     <ClCompile Include="CS405-Project.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\controls.hpp" />
+    <ClInclude Include="common\heart.hpp" />
+    <ClInclude Include="common\objloader.hpp" />
     <ClInclude Include="common\shader.hpp" />
     <ClInclude Include="common\shader_s.h" />
+    <ClInclude Include="common\text2D.hpp" />
     <ClInclude Include="common\texture.hpp" />
+    <ClInclude Include="common\vboindexer.hpp" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="imagefragment.fragmentshader" />
+    <None Include="imageshader.imageshader" />
     <None Include="SimpleFragmentShader.fragmentshader" />
     <None Include="SimpleVertexShader.vertexshader" />
+    <None Include="StandardShading.fragmentshader" />
+    <None Include="StandardShading.vertexshader" />
     <None Include="TextureFragmentShader.fragmentshader" />
+    <None Include="TextVertexShader.fragmentshader" />
+    <None Include="TextVertexShader.vertexshader" />
     <None Include="TransformVertexShader.vertexshader" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="azkni-x64jj.dds" />
     <Image Include="brickwall.bmp" />
+    <Image Include="heart-png-38789.bmp" />
+    <Image Include="Holstein.DDS" />
     <Image Include="minecraft.bmp" />
+    <Image Include="toppng.com-heart-pixelart-game-retro-red-minecraft-life-pixel-corazon-de-8-bits-1024x865.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -8,6 +9,11 @@
 
 #include <common/shader.hpp>
 #include <common/texture.hpp>
+#include <common/text2D.hpp>
+#include <common/heart.hpp>
+#include <common/objloader.hpp>
+#include <common/vboindexer.hpp>
+
 
 using namespace glm;
 
@@ -63,104 +69,49 @@ int main(void)
 	float horizontalAngle = 3.14f;
 	float verticalAngle = 0.0f;
 	float initialFoV = 45.0f;
+	float player_score = 0;
 
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	GLuint programID = LoadShaders("TransformVertexShader.vertexshader", "TextureFragmentShader.fragmentshader");
+
+	GLuint programID = LoadShaders("StandardShading.vertexshader", "StandardShading.fragmentshader");
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+	GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
+
 	GLuint Texture = loadBMP_custom("brickwall.bmp");
-	//GLuint Texture = loadDDS("uvtemplate.DDS");
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
-	static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f
-	};
-
-	static const GLfloat g_uv_buffer_data[] = {
-		0.000059f, 1.0f - 0.000004f,
-		0.000103f, 1.0f - 0.336048f,
-		0.335973f, 1.0f - 0.335903f,
-		1.000023f, 1.0f - 0.000013f,
-		0.667979f, 1.0f - 0.335851f,
-		0.999958f, 1.0f - 0.336064f,
-		0.667979f, 1.0f - 0.335851f,
-		0.336024f, 1.0f - 0.671877f,
-		0.667969f, 1.0f - 0.671889f,
-		1.000023f, 1.0f - 0.000013f,
-		0.668104f, 1.0f - 0.000013f,
-		0.667979f, 1.0f - 0.335851f,
-		0.000059f, 1.0f - 0.000004f,
-		0.335973f, 1.0f - 0.335903f,
-		0.336098f, 1.0f - 0.000071f,
-		0.667979f, 1.0f - 0.335851f,
-		0.335973f, 1.0f - 0.335903f,
-		0.336024f, 1.0f - 0.671877f,
-		1.000004f, 1.0f - 0.671847f,
-		0.999958f, 1.0f - 0.336064f,
-		0.667979f, 1.0f - 0.335851f,
-		0.668104f, 1.0f - 0.000013f,
-		0.335973f, 1.0f - 0.335903f,
-		0.667979f, 1.0f - 0.335851f,
-		0.335973f, 1.0f - 0.335903f,
-		0.668104f, 1.0f - 0.000013f,
-		0.336098f, 1.0f - 0.000071f,
-		0.000103f, 1.0f - 0.336048f,
-		0.000004f, 1.0f - 0.671870f,
-		0.336024f, 1.0f - 0.671877f,
-		0.000103f, 1.0f - 0.336048f,
-		0.336024f, 1.0f - 0.671877f,
-		0.335973f, 1.0f - 0.335903f,
-		0.667969f, 1.0f - 0.671889f,
-		1.000004f, 1.0f - 0.671847f,
-		0.667979f, 1.0f - 0.335851f
-	};
+	// Read our .obj file
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	bool res = loadOBJ("cube.obj", vertices, uvs, normals);
 
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
 	GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+
+	initHeart2D("heart-png-38789.bmp");
+
+	initText2D("Holstein.DDS");
+
+	// Get a handle for our "LightPosition" uniform
+	glUseProgram(programID);
+	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	// main loop
 	do {
@@ -194,7 +145,7 @@ int main(void)
 
 		glm::vec3 up = glm::cross(right, direction);
 
-		glm::mat4 mdl = glm::mat4(1.0f);
+		glm::mat4 mdl = glm::mat4(1.0f); //ModelMatrix
 		mdl = glm::translate(mdl, glm::vec3(xpos, ypos, zpos));
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -222,18 +173,24 @@ int main(void)
 			cameraPos += right * cameraSpeed * deltaTime;
 		}
 
-		glm::mat4 vw = glm::lookAt(
+		glm::mat4 vw = glm::lookAt( //ViewMatrix
 			cameraPos,
 			cameraPos + direction,
 			up
 		);
 
-		glm::mat4 prjction = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+		glm::mat4 prjction = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 300.0f);
 
 		glm::mat4 movp = prjction * vw * mdl;
 
 		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &movp[0][0]);	
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &movp[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &mdl[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+
+		//Light stuff
+		glm::vec3 lightPos = glm::vec3(0, 10, 10);
+		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -263,8 +220,20 @@ int main(void)
 			(void*)0                          // array buffer offset
 		);
 
+		// 3rd attribute buffer : normals
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+		glVertexAttribPointer(
+			2,                                // attribute
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, 12 * 3); // 12*3 indices starting at 0 -> 12 triangles
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 		GLuint temp = 0;
 		for (float i = 20.0f; i > -520.0f; i -= 2.0f)
@@ -273,34 +242,78 @@ int main(void)
 			second_model = glm::translate(second_model, glm::vec3(-5.0f, 0.0f, i));
 			glm::mat4 second_mvp = prjction * vw * second_model;
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 			second_model = glm::mat4(1.0f);
 			second_model = glm::translate(second_model, glm::vec3(5.0f, 0.0f, i));
 			second_mvp = prjction * vw * second_model;
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 			second_model = glm::mat4(1.0f);
 			second_model = glm::translate(second_model, glm::vec3(5.0f, 2.0f, i));
 			second_mvp = prjction * vw * second_model;
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+			second_model = glm::mat4(1.0f);
+			second_model = glm::translate(second_model, glm::vec3(-5.0f, 2.0f, i));
+			second_mvp = prjction * vw * second_model;
+			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+			second_model = glm::mat4(1.0f);
+			second_model = glm::translate(second_model, glm::vec3(5.0f, 4.0f, i));
+			second_mvp = prjction * vw * second_model;
+			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+			second_model = glm::mat4(1.0f);
+			second_model = glm::translate(second_model, glm::vec3(-5.0f, 4.0f, i));
+			second_mvp = prjction * vw * second_model;
+			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 			if (temp % 7 == 0) {
 				second_model = glm::mat4(1.0f);
 				second_model = glm::translate(second_model, glm::vec3(3.0f, 0.0f, i + glfwGetTime() * 4));
 				second_mvp = prjction * vw * second_model;
 				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-				glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 				second_model = glm::mat4(1.0f);
 				second_model = glm::translate(second_model, glm::vec3(-3.0f, 0.0f, i + glfwGetTime() * 4 + 3));
 				second_mvp = prjction * vw * second_model;
 				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-				glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 			}
 			temp += 1;
 		}
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+
+		char score_text[256];
+		sprintf(score_text, "Score: %.0f", glfwGetTime() * 20);
+		printText2D(score_text, 10, 570, 20);
+
+		char lives_text[256];
+		sprintf(lives_text, "Lives:");
+		printText2D(lives_text, 550, 570, 20);
+
+		printHeart2D(675, 560, 30);
+		printHeart2D(715, 560, 30);
+		printHeart2D(755, 560, 30);
 
 		// Swap buffers
 		glfwSwapBuffers(window);
@@ -314,6 +327,7 @@ int main(void)
 	// Cleanup VBO and shader
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &normalbuffer);
 	glDeleteProgram(programID);
 	glDeleteTextures(1, &Texture);
 	glDeleteVertexArrays(1, &VertexArrayID);
