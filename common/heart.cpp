@@ -22,7 +22,7 @@ void initHeart2D(const char* texturePath) {
 
 	// Initialize texture
 	//Heart2DTextureID = loadDDS(texturePath);
-	Heart2DTextureID = loadBMP_custom("toppng.com-heart-pixelart-game-retro-red-minecraft-life-pixel-corazon-de-8-bits-1024x865.bmp");
+	Heart2DTextureID = loadBMP_custom("heart.bmp");
 
 	// Initialize VBO
 	glGenBuffers(1, &Heart2DVertexBufferID);

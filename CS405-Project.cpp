@@ -70,6 +70,26 @@ int main(void)
 	float verticalAngle = 0.0f;
 	float initialFoV = 45.0f;
 	float player_score = 0;
+	int player_hearts = 3;
+	bool isGameOver = false;
+
+	int tmp = 0;
+	std::vector<glm::vec3> cube_positions;
+	for (float i = 20.0f; i > -520.0f; i -= 2.0f)
+	{
+		cube_positions.push_back(glm::vec3(-5.0f, 0.0f, i));
+		cube_positions.push_back(glm::vec3(5.0f, 0.0f, i));
+		cube_positions.push_back(glm::vec3(-5.0f, 2.0f, i));
+		cube_positions.push_back(glm::vec3(5.0f, 2.0f, i));
+		cube_positions.push_back(glm::vec3(-5.0f, 4.0f, i));
+		cube_positions.push_back(glm::vec3(5.0f, 4.0f, i));
+		if (tmp % 7 == 0)
+		{
+			cube_positions.push_back(glm::vec3(3.0f, 0.0f, i));
+			cube_positions.push_back(glm::vec3(-3.0f, 0.0f, i));
+		}
+		tmp += 1;
+	}
 
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -235,86 +255,111 @@ int main(void)
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
-		GLuint temp = 0;
-		for (float i = 20.0f; i > -520.0f; i -= 2.0f)
+		for (size_t i = 0; i < cube_positions.size(); i++)
 		{
-			glm::mat4 second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(-5.0f, 0.0f, i));
-			glm::mat4 second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(5.0f, 0.0f, i));
-			second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(5.0f, 2.0f, i));
-			second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(-5.0f, 2.0f, i));
-			second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(5.0f, 4.0f, i));
-			second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			second_model = glm::mat4(1.0f);
-			second_model = glm::translate(second_model, glm::vec3(-5.0f, 4.0f, i));
-			second_mvp = prjction * vw * second_model;
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-			glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-			glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-			if (temp % 7 == 0) {
-				second_model = glm::mat4(1.0f);
-				second_model = glm::translate(second_model, glm::vec3(3.0f, 0.0f, i + glfwGetTime() * 4));
-				second_mvp = prjction * vw * second_model;
-				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
-				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
-				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
-				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-				second_model = glm::mat4(1.0f);
-				second_model = glm::translate(second_model, glm::vec3(-3.0f, 0.0f, i + glfwGetTime() * 4 + 3));
-				second_mvp = prjction * vw * second_model;
+			glm::vec3 tmpvec = cube_positions[i];
+			if (tmpvec.x == 3.0f)
+			{
+				tmpvec = glm::vec3(tmpvec.x, tmpvec.y, tmpvec.z + glfwGetTime() * 4);
+				glm::mat4 second_model = glm::mat4(1.0f);
+				second_model = glm::translate(second_model, tmpvec);
+				glm::mat4 second_mvp = prjction * vw * second_model;
 				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
 				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
 				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
 				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 			}
-			temp += 1;
+			else if (tmpvec.x == -3.0f)
+			{
+				tmpvec = glm::vec3(tmpvec.x, tmpvec.y, tmpvec.z + glfwGetTime() * 4 + 7);
+				glm::mat4 second_model = glm::mat4(1.0f);
+				second_model = glm::translate(second_model, tmpvec);
+				glm::mat4 second_mvp = prjction * vw * second_model;
+				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
+				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+			}
+			else
+			{
+				glm::mat4 second_model = glm::mat4(1.0f);
+				second_model = glm::translate(second_model, tmpvec);
+				glm::mat4 second_mvp = prjction * vw * second_model;
+				glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &second_mvp[0][0]);
+				glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &second_model[0][0]);
+				glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &vw[0][0]);
+				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+			}
 		}
+
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 
-		char score_text[256];
-		sprintf(score_text, "Score: %.0f", glfwGetTime() * 20);
-		printText2D(score_text, 10, 570, 20);
+		if (!isGameOver)
+		{
+			player_score += 100 * deltaTime;
+			char score_text[256];
+			sprintf(score_text, "Score: %.0f", player_score);
+			printText2D(score_text, 10, 570, 20);
 
-		char lives_text[256];
-		sprintf(lives_text, "Lives:");
-		printText2D(lives_text, 550, 570, 20);
+			char lives_text[256];
+			sprintf(lives_text, "Lives:");
+			printText2D(lives_text, 550, 570, 20);
+		}
 
-		printHeart2D(675, 560, 30);
-		printHeart2D(715, 560, 30);
-		printHeart2D(755, 560, 30);
+		if (player_hearts >= 1)
+		{
+			printHeart2D(675, 560, 30);
+		}
+		if (player_hearts >= 2)
+		{
+			printHeart2D(715, 560, 30);
+		}
+		if (player_hearts >= 3)
+		{
+			printHeart2D(755, 560, 30);
+		}
 
+		// Collision
+		for (size_t i = 0; i < cube_positions.size(); i++)
+		{
+			glm::vec3 tmpvec = cube_positions[i];
+			if (tmpvec.x == 3.0f)
+			{
+				tmpvec = glm::vec3(tmpvec.x, tmpvec.y, tmpvec.z + glfwGetTime() * 4);
+			}
+			else if (tmpvec.x == -3.0f)
+			{
+				tmpvec = glm::vec3(tmpvec.x, tmpvec.y, tmpvec.z + glfwGetTime() * 4 + 7);
+			}
+			if (abs(xpos - tmpvec.x) < 2 && abs(zpos - tmpvec.z) < 2)
+			{
+				player_hearts -= 1;
+				xpos = 0;
+				ypos = 0;
+				zpos = 0;
+				break;
+			}
+		}
+
+		if (player_hearts == 0)
+		{
+			isGameOver = true;
+			xpos = 0;
+			ypos = 0;
+			zpos = 1000;
+			char gameOverText[256];
+			sprintf(gameOverText, "Game Over!");
+			printText2D(gameOverText, 265, 300, 30);
+			char score_text[256];
+			sprintf(score_text, "Score: %.0f", player_score);
+			printText2D(score_text, 265, 270, 30);
+			cameraPos = glm::vec3(cameraPos.x, cameraPos.y + 0.003f, cameraPos.z + 0.003f);
+		}
+
+		printf("X,Y,Z: %f %f %f\n", xpos, ypos, zpos);
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();

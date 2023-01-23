@@ -182,12 +182,19 @@
     <Image Include="azkni-x64jj.dds" />
     <Image Include="brickwall.bmp" />
     <Image Include="heart-png-38789.bmp" />
+    <Image Include="heart.bmp" />
+    <Image Include="heart_lp.bmp" />
     <Image Include="Holstein.DDS" />
     <Image Include="minecraft.bmp" />
+    <Image Include="pixelheart.png" />
     <Image Include="toppng.com-heart-pixelart-game-retro-red-minecraft-life-pixel-corazon-de-8-bits-1024x865.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="heart_lp.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>

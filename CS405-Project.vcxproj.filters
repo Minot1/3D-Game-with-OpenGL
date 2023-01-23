@@ -126,9 +126,21 @@
     <Image Include="toppng.com-heart-pixelart-game-retro-red-minecraft-life-pixel-corazon-de-8-bits-1024x865.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="heart_lp.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="pixelheart.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="heart.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Object Include="cube.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
+    <Object Include="heart_lp.obj">
       <Filter>Resource Files</Filter>
     </Object>
   </ItemGroup>
