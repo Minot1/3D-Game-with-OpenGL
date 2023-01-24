@@ -72,6 +72,11 @@ int main(void)
 	float player_score = 0;
 	int player_hearts = 3;
 	bool isGameOver = false;
+	float wall_pos = 3.0f;
+	float second_wall_pos = -3.0f;
+	glm::vec3 player_speed = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 player_acc = glm::vec3(0.0f, -30.0f, 0.0f);
+	float friction = 10.0f;
 
 	int tmp = 0;
 	std::vector<glm::vec3> cube_positions;
@@ -138,6 +143,7 @@ int main(void)
 		static double lastTime = glfwGetTime();
 		double currentTime = glfwGetTime();
 		float deltaTime = float(currentTime - lastTime);
+		float deltaFriction = friction * deltaTime;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -165,6 +171,11 @@ int main(void)
 
 		glm::vec3 up = glm::cross(right, direction);
 
+		if (ypos < 0) {
+			ypos = 0;
+			player_speed = glm::vec3(player_speed.x, 0.0f, player_speed.z);
+		}
+
 		glm::mat4 mdl = glm::mat4(1.0f); //ModelMatrix
 		mdl = glm::translate(mdl, glm::vec3(xpos, ypos, zpos));
 
@@ -191,6 +202,9 @@ int main(void)
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 			cameraPos += right * cameraSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && player_speed.y == 0.0f) {
+			player_speed = glm::vec3(player_speed.x, 18.0f, player_speed.z);
 		}
 
 		glm::mat4 vw = glm::lookAt( //ViewMatrix
@@ -322,6 +336,14 @@ int main(void)
 			printHeart2D(755, 560, 30);
 		}
 
+		if (xpos > wall_pos) {
+			xpos = wall_pos;
+		}
+
+		if (xpos < second_wall_pos) {
+			xpos = second_wall_pos;
+		}
+
 		// Collision
 		for (size_t i = 0; i < cube_positions.size(); i++)
 		{
@@ -334,12 +356,20 @@ int main(void)
 			{
 				tmpvec = glm::vec3(tmpvec.x, tmpvec.y, tmpvec.z + glfwGetTime() * 4 + 7);
 			}
-			if (abs(xpos - tmpvec.x) < 2 && abs(zpos - tmpvec.z) < 2)
+			if (abs(xpos - tmpvec.x) < 2 && abs(zpos - tmpvec.z) < 2 && abs(ypos - tmpvec.y) < 2)
 			{
 				player_hearts -= 1;
 				xpos = 0;
 				ypos = 0;
 				zpos = 0;
+				break;
+			}
+			else if (xpos == 3 && tmpvec.x == 5) {
+				player_speed = glm::vec3(player_speed.x - 2, player_speed.y, player_speed.z);
+				break;
+			}
+			else if (xpos == -3 && tmpvec.x == -5) {
+				player_speed = glm::vec3(player_speed.x + 2, player_speed.y, player_speed.z);
 				break;
 			}
 		}
@@ -359,11 +389,39 @@ int main(void)
 			cameraPos = glm::vec3(cameraPos.x, cameraPos.y + 0.003f, cameraPos.z + 0.003f);
 		}
 
-		printf("X,Y,Z: %f %f %f\n", xpos, ypos, zpos);
+		player_speed += player_acc * deltaTime;
+		if (player_speed.x > deltaFriction) {
+			player_speed = glm::vec3(player_speed.x - deltaFriction, player_speed.y, player_speed.z);
+		}
+		else if (player_speed.x > 0.0f && player_speed.x <= deltaFriction) {
+			player_speed = glm::vec3(0.0f, player_speed.y, player_speed.z);
+		}
+		else if (player_speed.x < -deltaFriction) {
+			player_speed = glm::vec3(player_speed.x + deltaFriction, player_speed.y, player_speed.z);
+		}
+		else if (player_speed.x < 0.0f && player_speed.x > -deltaFriction) {
+			player_speed = glm::vec3(0.0f, player_speed.y, player_speed.z);
+		}
+		if (player_speed.z > deltaFriction) {
+			player_speed = glm::vec3(player_speed.x, player_speed.y, player_speed.z - deltaFriction);
+		}
+		else if (player_speed.z > 0.0f && player_speed.z <= deltaFriction) {
+			player_speed = glm::vec3(player_speed.x, player_speed.y, 0.0f);
+		}
+		else if (player_speed.z < -deltaFriction) {
+			player_speed = glm::vec3(player_speed.x, player_speed.y, player_speed.z + deltaFriction);
+		}
+		else if (player_speed.z < 0.0f && player_speed.z > -deltaFriction) {
+			player_speed = glm::vec3(player_speed.x, player_speed.y, 0.0f);
+		}
+		xpos += player_speed.x * deltaTime;
+		ypos += player_speed.y * deltaTime;
+		zpos += player_speed.z * deltaTime;
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
+		printf("X,Y,Z: %f %f %f\n", xpos, ypos, zpos);
 		lastTime = currentTime;
 	} // Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
